@@ -1,5 +1,6 @@
 import random
 import sys
+import pygame as pg
 
 from constant import HEIGHT, WIDTH, BLACK, WHITE, RED, GREEN, RestartGameSingle
 from save import getBestScores, saveGame
@@ -10,6 +11,8 @@ class Menu:
         self.pygame = pygame
         self.screen = screen
         self.font = self.pygame.font.SysFont('Time New Roman', 60)
+        self.clock = self.pygame.time.Clock()
+        self.isBreak = False
 
     def displayStartMenu(self):
         self.screen.fill(BLACK)
@@ -58,28 +61,37 @@ class Menu:
 
         self.pygame.display.update()
 
-    def displayRanking(self):
-        self.screen.fill(BLACK)
+    def displayRanking(self, pygame):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.isBreak = True
 
-        bestScores = getBestScores()
-        distance = 0
+            if(self.isBreak == True):
+                break
+            self.clock.tick(30)
+            self.screen.fill(BLACK)
 
-        # Title Text
-        title = self.font.render('HIGH SCORES:', False, RED)
-        titleRect = title.get_rect()
-        titleRect.center = (WIDTH//2, HEIGHT//8)
-        self.screen.blit(title, titleRect)
+            bestScores = getBestScores()
+            distance = 0
 
-        # All Rankings Text
-        for entry in bestScores.scores:
-            score = self.font.render(
-                str(entry.username) + str(entry.score), False, WHITE)
-            scoreRect = score.get_rect()
-            scoreRect.center = (WIDTH//2, 2*(HEIGHT//8) + distance)
-            self.screen.blit(score, scoreRect)
-            distance += 50
+            # Title Text
+            title = self.font.render('HIGH SCORES:', False, RED)
+            titleRect = title.get_rect()
+            titleRect.center = (WIDTH//2, HEIGHT//8)
+            self.screen.blit(title, titleRect)
 
-        self.pygame.display.update()
+            # All Rankings Text
+            for entry in bestScores.scores:
+                score = self.font.render(
+                    str(entry.username) + str(entry.score), False, WHITE)
+                scoreRect = score.get_rect()
+                scoreRect.center = (WIDTH//2, 2*(HEIGHT//8) + distance)
+                self.screen.blit(score, scoreRect)
+                distance += 50
+
+            self.pygame.display.update()
 
     def displayPauseMenu(self):
         self.screen.fill(BLACK)
@@ -185,19 +197,17 @@ class Menu:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_c:
-                        return False # False = Not restart game
+                        return False, False # False = Not restart game
                     # kills the snake but does not show death screen for resume and save
                     if event.key == pygame.K_r:
-                        return True # True = Restart game
+                        return True, False # True = Restart game
                     if event.key == pygame.K_s:
                         saveGame(player.size, player.state,
                                     apple.x, apple.y)
                         player.state[0]['x'] = -5 # Kill player
-                        return False
+                        return False, False
                     if event.key == pygame.K_e:
-                        pygame.display.quit()
-                        pygame.quit()
-                        sys.exit()
+                        return True, True
             menu.displayPauseMenu()
 
     def pauseMenuDualPlayer(self, pygame, menu):

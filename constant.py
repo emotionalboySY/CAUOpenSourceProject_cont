@@ -23,3 +23,4 @@ HIGH_SCORES_LENGTH = 10
 
 RestartGameSingle = False
 RestartGameDual = False
+IsExit = False

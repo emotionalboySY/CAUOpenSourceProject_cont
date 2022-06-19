@@ -117,6 +117,7 @@ def displayGame(pygame, screen, player, apple):
 #! screen => pygame window
 #! loadSave => bool for knowing if loading Save Or not
 def singlePlay(pygame, screen, menu, loadSave):
+    isExit = False
     clock = pygame.time.Clock()
     size = 1  # default Value
     xApple, yApple = random.randint(
@@ -154,7 +155,7 @@ def singlePlay(pygame, screen, menu, loadSave):
                 if event.key == pygame.K_RIGHT:
                     player.changeOrientation('right')
                 if event.key == pygame.K_ESCAPE:
-                    RestartGameSingle = menu.pauseMenuSinglePlayer(
+                    RestartGameSingle, IsExit = menu.pauseMenuSinglePlayer(
                         pygame, player, apple, menu)
         displayGame(pygame, screen, player, apple)
 
@@ -164,4 +165,4 @@ def singlePlay(pygame, screen, menu, loadSave):
         addNewScore(Score("Solo Player", player.size))
         time.sleep(2)
 
-    return RestartGameSingle
+    return RestartGameSingle, IsExit
